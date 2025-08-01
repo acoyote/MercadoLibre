@@ -1,0 +1,28 @@
+Requeimientos:
+  Eclipse IDE for Java Developers 2025 06
+  Java 24.0.2, crear las variables de entorno
+  Java(TM) SE Runtime Environment (build 24.0.2+12-54)
+  Java HotSpot(TM) 64-64-Bit Server VM (build 24.0.2+12-54, mixed mode, sharing)
+  Selenium 4.19.0 (Java, Maven)
+  Firefox 141.0 
+
+Para iniciar con la ejecucionse debera descargar el jar
+  Entrar a Eclipse IDE
+  Indicar la ruta donde se encuentre el jar
+  Cerrar la pantalla de bienvenida
+  Dar click en la opcion Import projects
+  Dar click en la carpeta General
+  Dar click en la opcion Projects from Folder or Archive
+  Dar click /boton Detecho en la carpeta BuscarArchivo 
+  Seleccionar Build Path
+  Dar click en External JARS
+  Buscar la librerias de Selenium y seleccionarlas 
+  Dar click en Abrir
+  Dar click en Apply
+  Dar click en Apply and Close
+  Abrir el arbol de la carpeta BuscarArticulo
+  Expandir src/test/java/MercadoLibre 
+  Dar click /boton Detecho en BusquedaFirefox.java 
+  Dar click en RunAS
+ 
+    
