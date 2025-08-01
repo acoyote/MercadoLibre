@@ -1,0 +1,194 @@
+/**
+ * Nombre del archivo: BuscarArchivo.java
+ * Proyecto: Automatización de búsqueda en MercadoLibre
+ *
+ * Descripción:
+ * Este script automatiza la búsqueda de productos en MercadoLibre México,
+ * aplicando filtros de condición, ubicación y ordenamiento, y luego extrae
+ * los nombres, precios y enlaces de los primeros 5 resultados encontrados.
+ *
+ * Autor: América Coyote Castillo
+ * Correo: acoyote9@gmail.com
+ * Fecha de creación: 31 de julio de 2025
+ * Última modificación: 31 de julio de 2025
+ *
+ * Requisitos:
+ * - Geckodriver instalado y en el PATH
+ * - Firefox actualizado
+ * - Dependencias de Selenium en el archivo pom.xml
+ */
+
+package MercadoLibre;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import org.openqa.selenium.io.FileHandler;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.Duration;
+import java.util.List;
+
+public class BusquedaFirefox {
+
+	public static void main(String[] args) throws InterruptedException {
+        WebDriverManager.firefoxdriver().setup();
+        WebDriver driver = new FirefoxDriver();
+
+        // Declaramos el archivo de salida
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("resultados.txt"))) {
+            try {
+                driver.get("https://www.mercadolibre.com/");
+                driver.manage().window().maximize();
+                Thread.sleep(2000);
+                
+             // Captura de pantalla
+                File step = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+                FileHandler.copy(step, new File("Mercadolibre.png"));
+                System.out.println("Captura de evidencia guardada como Mercadolibre.png");
+
+                try {
+                    WebElement mexicoLink = driver.findElement(By.cssSelector("a[href*='mercadolibre.com.mx']"));
+                    mexicoLink.click();
+                    Thread.sleep(2000);
+                	System.out.println ("Se seleccionó México como país ");
+                } catch (Exception e) {
+                    // Ya está en la versión de México
+               
+                }
+
+             	// Captura de pantalla
+                File step1 = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+                FileHandler.copy(step1, new File("MercadolibreMexico.png"));
+                System.out.println("Captura de evidencia guardada como MercadolibreMexico.png");
+                
+                WebElement searchBox = driver.findElement(By.name("as_word"));
+                searchBox.sendKeys("playstation 5");
+                searchBox.submit();
+                Thread.sleep(10000);
+                System.out.println ("Se busco el Producto de forma exitosa");
+                
+             // Captura de pantalla
+                File step2 = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+                FileHandler.copy(step2, new File("BusquedaProducto.png"));
+                System.out.println("Captura de evidencia guardada como BusquedaProducto.png");
+                
+                	// Filtrar por condición "Nuevo"
+
+                try {
+                	 System.out.println ("Esperando a encontrar el filtro de NUEVO en la pantalla.");
+                	 WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+                	 WebElement nuevoFiltro = wait.until(ExpectedConditions.elementToBeClickable(
+                	     By.xpath("//aside//a[.//span[text()='Nuevo']]")
+                	 ));
+
+                	 ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", nuevoFiltro);
+                	 Thread.sleep(500);
+                	 nuevoFiltro.click(); // o usa js.executeScript("arguments[0].click()", nuevoFiltro);
+                	 System.out.println ("Se filtró por condición “Nuevo”");
+                } catch (Exception e) {
+                    System.out.println("No se encontró el filtro 'Nuevo'.");
+                }
+            	// Captura de pantalla
+                File step3 = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+                FileHandler.copy(step3, new File("CondicionNuevo.png"));
+                System.out.println("Captura de evidencia guardada como CondicionNuevo.png");
+
+                try {
+                	System.out.println ("Esperando a encontrar el filtro location “Cdmx” en la pantalla.");
+                	WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+                	WebElement ubicacion = wait.until(ExpectedConditions.elementToBeClickable(
+                	    By.xpath("//aside//a[.//span[text()='Local']]")
+                	));
+
+                	((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", ubicacion);
+                	Thread.sleep(500);
+                	ubicacion.click(); // o usa js.executeScript("arguments[0].click()", ubicacion);
+                	System.out.println("Se filtro por ubicación.");
+                } catch (Exception e) {
+                    System.out.println("No se encontró el filtro 'Distrito Federal' (CDMX).");
+                }
+                
+             // Captura de pantalla
+                File step4 = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+                FileHandler.copy(step4, new File("UbicacionLocal.png"));
+                System.out.println("Captura de evidencia guardada como UbicacionLocal.png");
+
+                try {
+                	System.out.println ("Esperando a encontrar el filtro “Ordenador” en la pantalla y aplicar el orden de 'Mayor precio'.");
+                	WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+                	JavascriptExecutor js = (JavascriptExecutor) driver;
+                	
+                	// 1. Esperar y localizar botón "Ordenar" o similar
+                	WebElement ordenarBtn = wait.until(ExpectedConditions.elementToBeClickable(
+                	    By.xpath("//button[contains(@aria-label,'Más relevantes') or contains(text(),'Más relevantes')]")
+                	));
+
+                	// 2. Hacer scroll y click
+                	js.executeScript("arguments[0].scrollIntoView(true);", ordenarBtn);
+                	Thread.sleep(500);
+
+                	try {
+                	    ordenarBtn.click();
+                	} catch (Exception e) {
+                	    js.executeScript("arguments[0].click();", ordenarBtn);
+                	}
+
+                	// 3. Elegir "Mayor precio"
+                	WebElement mayorPrecio = wait.until(ExpectedConditions.elementToBeClickable(
+                	    By.xpath("//li//span[contains(text(),'Mayor precio') or contains(text(),'precio descendente')]")
+                	));
+                	mayorPrecio.click();
+                	Thread.sleep(2000);
+                	System.out.println("Se ordeno de “mayor a menor precio”.");
+                } catch (Exception e) {
+                    System.out.println("No se pudo aplicar el orden de 'Mayor precio'.");
+                }
+                
+             // Captura de pantalla
+                File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+                FileHandler.copy(screenshot, new File("captura_productos.png"));
+                System.out.println("Captura evidencia de pantalla guardada como captura_productos.png");
+                
+                System.out.println ("Esperando a obtener el nombre de los 5 primeros productos y mostrar resultado.");
+                       
+                WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+                
+             // Esperar a que aparezcan los productos
+                        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("div.ui-search-result__wrapper")));
+                                        
+                       // List<WebElement> productos = driver.findElements(By.cssSelector("h3.poly-component__title-wrapper")); Genera el listado de todos los productos obtenidos
+                        List<WebElement> productos = driver.findElements(By.cssSelector("a.poly-component__title"));
+                       // for (WebElement producto : productos) {
+                           // System.out.println(producto.getText());
+                      //  }
+                        for (int i = 0; i < Math.min(5, productos.size()); i++) {
+                            System.out.println((i + 1) + ". " + productos.get(i).getText());
+                        }
+                                   
+                                                  
+                        driver.quit();
+                    
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                driver.quit();
+            }
+        } catch (IOException e) {
+            System.err.println("Error al escribir el archivo: " + e.getMessage());
+        }
+ 
+	}
+
+}
